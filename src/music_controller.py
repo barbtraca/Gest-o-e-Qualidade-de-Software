@@ -4,8 +4,6 @@ mixer.init()
 
 current_playing = False
 
-
-
 def button_action(button = CTkButton, play_image = CTkImage, pause_image = CTkImage) -> None:
     global current_playing
     
