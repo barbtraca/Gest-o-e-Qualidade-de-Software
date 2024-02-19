@@ -1,9 +1,14 @@
 import customtkinter
-from .music_controller import button_action
+from .music_controller import Musics
 from PIL import Image
 import time
 
+music_controll = Musics()
+
 class App(customtkinter.CTk):
+    '''
+        Screen Class
+    '''
     def __init__(self):
         super().__init__()
 
@@ -50,8 +55,9 @@ class App(customtkinter.CTk):
 
         self.song_progressbar = customtkinter.CTkProgressBar(self,
                                                              orientation="horizontal",
-                                                             progress_color=("white")
+                                                             progress_color=("white"),
                                                              )
+        self.song_progressbar.set(0)
         
         self.song_image.grid(row=0, column=0, padx=30, pady=(30, 0), columnspan=2)
         self.song_progressbar.grid(row=1, column=0, padx=10, pady=20, columnspan=2)
@@ -100,7 +106,7 @@ class App(customtkinter.CTk):
         self.slider = customtkinter.CTkSlider(footer_frame,
                                       from_=0, to=100,
                                       width=120,
-                                      command=self.get_value,
+                                      command=self.set_volume,
                                       number_of_steps=10)
         
         footer_frame.grid(row=2, column=0, columnspan=2, pady=(10, 0), sticky="nsew")
@@ -122,15 +128,16 @@ class App(customtkinter.CTk):
         Activate the play/pause button, calling the button_action
         function
         '''
-        button_action(
+        music_controll.button_action(
             button=self.control_button,
             play_image=self.play_img,
             pause_image=self.pause_img)
   
-    def get_value(self, value):
+    def set_volume(self, value):
         '''
-        Just get the value from the slider
+        Set the music volume
         '''
-        if value == self.slider.get():
-            time.sleep(0.08)
-            print(value)
+        if music_controll.song_lengh is not None:
+            self.after(100, music_controll.set_mixer_volume(value=value))
+        else: return
+        
