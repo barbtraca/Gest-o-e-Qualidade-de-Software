@@ -34,12 +34,11 @@ class Musics():
         while self.song_lengh > 0 and self.current_playing:
             time.sleep(1)
             self.song_lengh -= 1
-        if self.song_lengh == 0:
+        if self.song_lengh <= 0:
             self.song_lengh = None
             self.current_song_index +=1
             try:
                 mixer.music.unload()
-                print("a")
                 self.play_music()
             except IndexError:
                 self.current_song_index = 0
