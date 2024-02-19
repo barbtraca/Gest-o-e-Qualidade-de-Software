@@ -3,7 +3,7 @@ from .music_controller import Musics
 from PIL import Image
 import time
 
-music_controll = Musics()
+music_control = Musics()
 
 class App(customtkinter.CTk):
     '''
@@ -110,11 +110,6 @@ class App(customtkinter.CTk):
                                       number_of_steps=10)
         
         footer_frame.grid(row=2, column=0, columnspan=2, pady=(10, 0), sticky="nsew")
-        footer_frame.grid_columnconfigure(0, weight=1)
-        footer_frame.grid_columnconfigure(1, weight=1)
-        footer_frame.grid_columnconfigure(2, weight=1)
-        footer_frame.grid_columnconfigure(3, weight=1)
-        footer_frame.grid_columnconfigure(4, weight=1)
         self.song_music.grid(row=0, column=0, padx=35, pady=10)
         self.next_left_button.grid(row=0, column=1, pady=10)
         self.control_button.grid(row=0, column=2, pady=10)
@@ -128,7 +123,7 @@ class App(customtkinter.CTk):
         Activate the play/pause button, calling the button_action
         function
         '''
-        music_controll.button_action(
+        music_control.button_action(
             button=self.control_button,
             play_image=self.play_img,
             pause_image=self.pause_img)
@@ -137,7 +132,6 @@ class App(customtkinter.CTk):
         '''
         Set the music volume
         '''
-        if music_controll.song_lengh is not None:
-            self.after(100, music_controll.set_mixer_volume(value=value))
+        if music_control.song_lengh is not None:
+            self.after(100, music_control.set_mixer_volume(value=value))
         else: return
-        

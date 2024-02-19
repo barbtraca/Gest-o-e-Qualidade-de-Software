@@ -1,5 +1,6 @@
 from pygame import mixer
 import os
+from threading import Thread
 import time
 from customtkinter import CTkImage, CTkButton
 mixer.init()
@@ -24,15 +25,43 @@ class Musics():
                     mp3_files.append(root + file)
         return mp3_files
      
+    def start_stop_music_countdown(self):
+        print(self.current_playing)
+        if self.current_playing:
+            self.countdown_thread = Thread(target=self.run_countdown)
+            self.countdown_thread.start()
+
+    def run_countdown(self):
+        print("Aqui é o countdown")
+        while self.song_lengh > 0 and self.current_playing:
+            time.sleep(1)
+            self.song_lengh -= 1
+            print(self.song_lengh)
+        if self.song_lengh == 0:
+            self.song_lengh = None
+            self.current_song_index +=1
+            try:
+                mixer.music.unload()
+                print("a")
+                self.play_music()
+            except IndexError:
+                self.current_song_index = 0
+                self.current_playing = True
+                print("You track list has completed!")
 
     def play_music(self):
-        mixer.music.load(self.musics[self.current_song_index])
-        mixer.music.set_volume(DEFAULT_VOLUME)
         if self.song_lengh is None:
+            mixer.music.load(self.musics[self.current_song_index])
+            mixer.music.set_volume(DEFAULT_VOLUME)
             self.song_lengh = mixer.Sound(file=self.musics[self.current_song_index]).get_length()
-        mixer.music.play()
+            self.song_lengh = 15
+            mixer.music.play()
+        else: mixer.music.unpause()
+        self.start_stop_music_countdown()
 
     def pause_music(self):
+        self.current_playing = False
+        self.start_stop_music_countdown()
         mixer.music.pause()
 
     def button_action(self,
