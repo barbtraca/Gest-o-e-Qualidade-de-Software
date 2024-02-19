@@ -26,17 +26,14 @@ class Musics():
         return mp3_files
      
     def start_stop_music_countdown(self):
-        print(self.current_playing)
         if self.current_playing:
             self.countdown_thread = Thread(target=self.run_countdown)
             self.countdown_thread.start()
 
     def run_countdown(self):
-        print("Aqui é o countdown")
         while self.song_lengh > 0 and self.current_playing:
             time.sleep(1)
             self.song_lengh -= 1
-            print(self.song_lengh)
         if self.song_lengh == 0:
             self.song_lengh = None
             self.current_song_index +=1
@@ -54,7 +51,6 @@ class Musics():
             mixer.music.load(self.musics[self.current_song_index])
             mixer.music.set_volume(DEFAULT_VOLUME)
             self.song_lengh = mixer.Sound(file=self.musics[self.current_song_index]).get_length()
-            self.song_lengh = 15
             mixer.music.play()
         else: mixer.music.unpause()
         self.start_stop_music_countdown()
