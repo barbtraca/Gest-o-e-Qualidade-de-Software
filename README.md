@@ -36,7 +36,7 @@ Start the player
 
 ## Screenshots
 
-![App Screenshot](https://github.com/arthurspedine/Music-Player/assets/65985748/f55ee771-4973-4574-b29d-b928713e564f)
+![App Screenshot](https://github.com/arthurspedine/Music-Player/assets/65985748/eb1031f8-08d8-4785-b251-2215acd7f60e)
 
 
 ## Feedback
