@@ -40,7 +40,9 @@ class Songs():
             mixer.music.load(self.songs[self.current_song_index])
             mixer.music.set_volume(DEFAULT_VOLUME)
             self.song_lengh = mixer.Sound(file=self.songs[self.current_song_index]).get_length()
-            self.song_lengh = 10
+            self.song_lengh = 5
+            print("TOCANDO MUSICA")
+            print(self.song_lengh)
             mixer.music.play()
         else: mixer.music.unpause()
 
@@ -48,15 +50,36 @@ class Songs():
         '''
             Pause the current song
         '''
-        self.current_playing = False
         mixer.music.pause()
 
     def next_song(self):
         '''
-            Play the next song from the track
+            Play the next song of the track
         '''
-        mixer.music.unload()
-        self.play_song()
+        self.current_song_index += 1
+        if self.current_song_index > len(self.songs) - 1:
+            self.reset_variables(cp=True)
+            return False
+        if self.song_lengh is not None:
+            mixer.music.unload()
+        return True
+
+    def previous_song(self):
+        '''
+            Play the previous song of the track
+        '''
+        try:
+            mixer.mixer_music.unload()
+        except AttributeError:
+            pass
+        self.current_song_index -= 1
+        self.song_lengh = None
+        if self.current_song_index < 0:
+            print("Reached first song")
+            self.current_song_index = 0
+            self.current_playing = not self.current_playing
+            return True
+        return False
 
     def button_action(self,
                       button = CTkButton,
@@ -88,4 +111,13 @@ class Songs():
         '''
             Just stop the music to don't have any bugs
         '''
+        self.current_playing = not self.current_playing
         mixer.music.stop()
+    
+    def reset_variables(self, csi = 0, cp = False, sl = None):
+        '''
+            Reset variables
+        '''
+        self.current_song_index = csi
+        self.current_playing = cp
+        self.song_lengh = sl

@@ -59,7 +59,7 @@ class App(customtkinter.CTk):
                                                              progress_color=("white"),
                                                              )
         self.song_progressbar.set(0)
-        
+
         self.song_image.grid(row=0, column=0, padx=30, pady=(30, 0), columnspan=2)
         self.song_progressbar.grid(row=1, column=0, padx=10, pady=20, columnspan=2)
 
@@ -83,6 +83,7 @@ class App(customtkinter.CTk):
                                                          width=40,
                                                          height=40,
                                                          text=None,
+                                                         command=self.l_button,
                                                          image=self.next_left_img)
 
         self.next_right_button = customtkinter.CTkButton(footer_frame,
@@ -91,6 +92,7 @@ class App(customtkinter.CTk):
                                                          width=40,
                                                          height=40,
                                                          text=None,
+                                                         command=self.r_button,
                                                          image=self.next_right_img)
 
         self.control_button = customtkinter.CTkButton(footer_frame,
@@ -140,9 +142,8 @@ class App(customtkinter.CTk):
         '''
             Inicialize the countdown
         '''
-        if song_control.current_playing:
-            countdown_thread = Thread(target=self.run_countdown)
-            countdown_thread.start()
+        countdown_thread = Thread(target=self.run_countdown)
+        countdown_thread.start()
 
     def run_countdown(self):
         '''
@@ -150,25 +151,61 @@ class App(customtkinter.CTk):
             when is equal or under 0, the function goes
             to the next music or stop the track
         '''
+        if song_control.song_lengh is None: 
+            time.sleep(1)
+            song_control.song_lengh = song_control.song_lengh
         while song_control.song_lengh > 0 and song_control.current_playing:
             time.sleep(1)
             song_control.song_lengh -= 1
+            print(song_control.song_lengh)
         if song_control.song_lengh <= 0:
             try:
-                song_control.song_lengh = None
-                song_control.current_song_index += 1
+                print("oi")
                 song_control.next_song()
-                self.start_stop_song_countdown()
+                song_control.reset_variables(
+                    csi=song_control.current_song_index,
+                    sl =None)
+                self.activate_button()
                 song_control.set_mixer_volume(self.slider.get())
             except IndexError:
-                song_control.current_song_index = 0
-                song_control.current_playing = True
+                print("oi EXCEPT")
+                song_control.reset_variables(
+                    csi= 0,
+                    cp = True,
+                    sl = None)
                 song_control.button_action(
                                     button=self.control_button,
                                     play_image=self.play_img,
                                     pause_image=self.pause_img
                                     )
                 print("You track list has completed!")
+
+    def r_button(self):
+        '''
+            Goes to the next song of the track
+        '''
+        if song_control.next_song():
+            print("a")
+            song_control.song_lengh = None
+            self.activate_button()
+        else:
+            self.start_stop_song_countdown()
+            self.control_button.configure(image=self.play_img)
+            song_control.stop_player()
+            print("Reached last song, current playing the first one!")
+            
+        
+    def l_button(self):
+        '''
+            Goes to the previous song of the track
+        '''
+        if song_control.previous_song():
+            self.activate_button()
+        else:
+            if not song_control.current_playing:
+                self.activate_button()
+            else:
+                song_control.play_song()
 
     def stop_player(self):
         '''
