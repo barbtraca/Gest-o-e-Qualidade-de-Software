@@ -1,5 +1,5 @@
 ''' UI Scree and main functions '''
-from threading import Thread
+import random
 import customtkinter
 from PIL import Image
 from src.song_controller import Songs
@@ -56,6 +56,7 @@ class App(customtkinter.CTk):
         self.song_progressbar = customtkinter.CTkProgressBar(self,
                                                              orientation="horizontal",
                                                              progress_color=("cyan"),
+                                                             mode="indeterminate"
                                                              )
         self.song_progressbar.set(0)
 
@@ -119,7 +120,7 @@ class App(customtkinter.CTk):
         self.slider.grid(row=0, column=4, pady=6)
 
         self.columnconfigure(0, weight=1)
-        footer_frame.columnconfigure(0, weight=0, minsize=160)
+        footer_frame.columnconfigure(0, weight=0, minsize=150)
 
     # Functions
 
@@ -128,20 +129,27 @@ class App(customtkinter.CTk):
             Activate the play/pause button, calling the button_action
             function
         '''
+        if not song_control.playing:
+            self.song_progressbar.set(0)
+            self.song_progressbar.configure(indeterminate_speed=1.00 / random.randint(2, 4))
         song_control.button_action(
             button=self.control_button,
             play_image=self.play_img,
             pause_image=self.pause_img)
-        
+        if song_control.current_playing:
+            self.song_progressbar.start()
+        else:
+            self.song_progressbar.stop()
+
         song_control.set_mixer_volume(self.slider.get())
-        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
+        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}") 
 
     def set_volume(self, value):
         '''
             Set the song volume
         '''
-        if song_control.song_lengh is not None:
-            self.after(100, song_control.set_mixer_volume(value=value))
+        if song_control.playing:
+            song_control.set_mixer_volume(value=value)
         else: pass
 
     def completed_track(self):

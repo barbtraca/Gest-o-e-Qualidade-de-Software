@@ -16,7 +16,7 @@ class Songs():
     def __init__(self) -> None:
         self.current_playing = False
         self.current_song_index = 0
-        self.song_lengh = None
+        self.playing = False
         self.songs = self.find_songs()
         self.current_song_name = ""
 
@@ -36,10 +36,10 @@ class Songs():
         '''
             Play the current song
         '''
-        if self.song_lengh is None:
+        if not self.playing:
             mixer.music.load(self.songs[self.current_song_index])
             mixer.music.set_volume(DEFAULT_VOLUME)
-            self.song_lengh = mixer.Sound(file=self.songs[self.current_song_index]).get_length()
+            self.playing = True
             mixer.music.play()
         else: mixer.music.unpause()
 
@@ -54,7 +54,7 @@ class Songs():
             Play the next song of the track
         '''
         self.current_song_index += 1
-        if self.song_lengh is not None:
+        if self.playing:
             mixer.music.unload()
 
     def previous_song(self):
@@ -65,7 +65,7 @@ class Songs():
             mixer.mixer_music.unload()
         except AttributeError:
             pass
-        self.song_lengh = None
+        self.playing = False
         self.current_song_index -= 1
         if self.current_song_index < 0:
             print("Reached first song")
@@ -106,10 +106,10 @@ class Songs():
         self.current_playing = not self.current_playing
         mixer.music.stop()
 
-    def reset_variables(self, csi = 0, cp = False, sl = None):
+    def reset_variables(self, csi = 0, cp = False, p = False):
         '''
             Reset variables
         '''
         self.current_song_index = csi
         self.current_playing = cp
-        self.song_lengh = sl
+        self.playing = p
