@@ -16,11 +16,11 @@ class App(customtkinter.CTk):
         # --------------- App Setup --------------- #
 
         self.title("MP3 Player")
-        self.geometry("510x425")
+        self.geometry("510x415")
         self._set_appearance_mode("dark")
-        self.minsize(width=510, height=425)
-        self.maxsize(width=510, height=425)
-        
+        self.minsize(width=510, height=415)
+        self.maxsize(width=510, height=415)
+
         # --------------- Photos --------------- #
 
         self.play_img = customtkinter.CTkImage(
@@ -58,10 +58,10 @@ class App(customtkinter.CTk):
                                                              orientation="horizontal",
                                                              progress_color=("white"),
                                                              )
-        self.song_progressbar.set(0)
+        # self.song_progressbar.set(0)
 
-        self.song_image.grid(row=0, column=0, padx=30, pady=(30, 0), columnspan=2)
-        self.song_progressbar.grid(row=1, column=0, padx=10, pady=20, columnspan=2)
+        self.song_image.grid(row=0, column=0, padx=30, pady=(30, 0), sticky="nsew")
+        self.song_progressbar.grid(row=1, column=0, padx=10, pady=20, sticky="ns")
 
         # --------------- Frame Objects --------------- #
 
@@ -72,11 +72,13 @@ class App(customtkinter.CTk):
                                       border_color="#393939",
                                      )
 
-        self.song_music = customtkinter.CTkLabel(footer_frame,
-                                          text="Song Musisd asdsadas.",
-                                          font=("Arial", 17),
+        self.song_label = customtkinter.CTkLabel(footer_frame,
+                                          text="Play to Start",
+                                          font=("Arial", 19),
+                                          width=130,
+                                          height=50,
                                           text_color="#000000",
-                                          wraplength=155)
+                                          wraplength=160)
         self.previous_song_button = customtkinter.CTkButton(footer_frame,
                                                          hover="transparent",
                                                          fg_color="transparent",
@@ -110,12 +112,15 @@ class App(customtkinter.CTk):
                                       width=120,
                                       command=self.set_volume,
                                       number_of_steps=10)
-        footer_frame.grid(row=2, column=0, columnspan=2, pady=(10, 0), sticky="nsew")
-        self.song_music.grid(row=0, column=0, padx=35, pady=10)
-        self.previous_song_button.grid(row=0, column=1, pady=10)
+        footer_frame.grid(row=2, column=0, columnspan=2, sticky="nsew")
+        self.song_label.grid(row=0, column=0, pady=6, padx=(10, 0), sticky="w")
+        self.previous_song_button.grid(row=0, column=1, pady=6, padx=(4, 0))
         self.control_button.grid(row=0, column=2, pady=10)
-        self.next_song_button.grid(row=0, column=3, pady=10)
-        self.slider.grid(row=0, column=4, padx=20, pady=10)
+        self.next_song_button.grid(row=0, column=3, pady=6, padx=(0, 20))
+        self.slider.grid(row=0, column=4, pady=6)
+
+        self.columnconfigure(0, weight=1)
+        footer_frame.columnconfigure(0, weight=0, minsize=160)
 
     # Functions
 
@@ -128,7 +133,8 @@ class App(customtkinter.CTk):
             button=self.control_button,
             play_image=self.play_img,
             pause_image=self.pause_img)
-        self.start_stop_song_countdown()
+        song_control.set_mixer_volume(self.slider.get())
+        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
 
     def set_volume(self, value):
         '''
@@ -136,42 +142,12 @@ class App(customtkinter.CTk):
         '''
         if song_control.song_lengh is not None:
             self.after(100, song_control.set_mixer_volume(value=value))
-        else: print("a")
-
-    def start_stop_song_countdown(self):
-        '''
-            Inicialize the countdown
-        '''
-        countdown_thread = Thread(target=self.run_countdown)
-        countdown_thread.start()
-
-    def run_countdown(self):
-        '''
-            Decay every 1 second the music lengh
-            when is equal or under 0, the function goes
-            to the next music or stop the track
-        '''
-        if song_control.song_lengh is None:
-            time.sleep(1)
-            song_control.song_lengh = song_control.song_lengh
-        while song_control.song_lengh > 0 and song_control.current_playing:
-            time.sleep(1)
-            song_control.song_lengh -= 1
-            print(song_control.song_lengh)
-        if song_control.song_lengh <= 0:
-            try:
-                print("oi")
-                song_control.next_song()
-                print(song_control.current_playing, song_control.current_song_index)
-                song_control.reset_variables(
-                    csi=song_control.current_song_index)
-                self.activate_button()
-                song_control.set_mixer_volume(self.slider.get())
-            except IndexError:
-                print("oi EXCEPT")
-                self.completed_track()
+        else: pass
 
     def completed_track(self):
+        '''
+            Message the user when the track list has completed
+        '''
         song_control.reset_variables(
             csi= 0,
             cp = True,
@@ -181,44 +157,34 @@ class App(customtkinter.CTk):
                             play_image=self.play_img,
                             pause_image=self.pause_img
                             )
+        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
         print("You track list has completed!")
 
     def r_button(self):
         '''
             Goes to the next song of the track
         '''
-        print(song_control.current_playing)
         if song_control.current_playing:
             song_control.reset_variables(
                 csi=song_control.current_song_index,
-                cp =song_control.current_playing,
-                sl =1)
+                cp =song_control.current_playing)
             self.activate_button()
-        else:
-            song_control.next_song()
-            try:
-                print("Try do r_button")
-                print(song_control.current_playing, song_control.current_song_index)
-                song_control.reset_variables(
-                csi=song_control.current_song_index,
-                cp =song_control.current_playing,
-                sl =None)
-                self.activate_button()
-            except IndexError:
-                print("Index Error do r_button")
-                self.completed_track()
-  
+        song_control.next_song()
+        song_control.reset_variables(csi=song_control.current_song_index,
+                                     cp=False)
+        try:
+            self.activate_button()
+        except IndexError:
+            self.completed_track()
+
     def l_button(self):
         '''
             Goes to the previous song of the track
         '''
-        if song_control.previous_song():
+        if song_control.current_playing:
             self.activate_button()
-        else:
-            if not song_control.current_playing:
-                self.activate_button()
-            else:
-                song_control.play_song()
+        song_control.previous_song()
+        self.activate_button()
 
     def stop_player(self):
         '''

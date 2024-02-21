@@ -18,8 +18,9 @@ class Songs():
         self.current_song_index = 0
         self.song_lengh = None
         self.songs = self.find_mp3()
+        self.current_song_name = ""
         print(self.songs)
-  
+
     def find_mp3(self):
         '''
             Find all the mp3 files from the /songs/ folder
@@ -40,7 +41,6 @@ class Songs():
             mixer.music.load(self.songs[self.current_song_index])
             mixer.music.set_volume(DEFAULT_VOLUME)
             self.song_lengh = mixer.Sound(file=self.songs[self.current_song_index]).get_length()
-            self.song_lengh = 5
             print("TOCANDO MUSICA")
             mixer.music.play()
         else: mixer.music.unpause()
@@ -67,14 +67,11 @@ class Songs():
             mixer.mixer_music.unload()
         except AttributeError:
             pass
-        self.current_song_index -= 1
         self.song_lengh = None
+        self.current_song_index -= 1
         if self.current_song_index < 0:
             print("Reached first song")
             self.current_song_index = 0
-            self.current_playing = not self.current_playing
-            return True
-        return False
 
     def button_action(self,
                       button = CTkButton,
@@ -86,8 +83,11 @@ class Songs():
         '''
         try:
             print(self.songs[self.current_song_index])
-        except: pass
+        except IndexError:
+            pass
         self.current_playing = not self.current_playing
+        self.current_song_name = os.path.basename(self.songs[self.
+                                                                 current_song_index]).split(".")[0]
         if self.current_playing:
             button.configure(image=pause_image)
             self.play_song()
@@ -110,7 +110,7 @@ class Songs():
         '''
         self.current_playing = not self.current_playing
         mixer.music.stop()
-    
+
     def reset_variables(self, csi = 0, cp = False, sl = None):
         '''
             Reset variables
