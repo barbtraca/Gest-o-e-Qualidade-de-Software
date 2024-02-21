@@ -1,6 +1,5 @@
 ''' UI Scree and main functions '''
 from threading import Thread
-import time
 import customtkinter
 from PIL import Image
 from src.song_controller import Songs
@@ -15,7 +14,7 @@ class App(customtkinter.CTk):
 
         # --------------- App Setup --------------- #
 
-        self.title("MP3 Player")
+        self.title("Music Player")
         self.geometry("510x415")
         self._set_appearance_mode("dark")
         self.minsize(width=510, height=415)
@@ -48,7 +47,7 @@ class App(customtkinter.CTk):
 
         # Center
 
-        image = customtkinter.CTkImage(dark_image=Image.open("./songs/a.png"),
+        image = customtkinter.CTkImage(dark_image=Image.open("././main_img.jpg"),
                                        size=(250,250))
         self.song_image = customtkinter.CTkLabel(self,
                                                  text=None,
@@ -56,9 +55,9 @@ class App(customtkinter.CTk):
 
         self.song_progressbar = customtkinter.CTkProgressBar(self,
                                                              orientation="horizontal",
-                                                             progress_color=("white"),
+                                                             progress_color=("cyan"),
                                                              )
-        # self.song_progressbar.set(0)
+        self.song_progressbar.set(0)
 
         self.song_image.grid(row=0, column=0, padx=30, pady=(30, 0), sticky="nsew")
         self.song_progressbar.grid(row=1, column=0, padx=10, pady=20, sticky="ns")
@@ -133,6 +132,7 @@ class App(customtkinter.CTk):
             button=self.control_button,
             play_image=self.play_img,
             pause_image=self.pause_img)
+        
         song_control.set_mixer_volume(self.slider.get())
         self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
 
@@ -170,8 +170,7 @@ class App(customtkinter.CTk):
                 cp =song_control.current_playing)
             self.activate_button()
         song_control.next_song()
-        song_control.reset_variables(csi=song_control.current_song_index,
-                                     cp=False)
+        song_control.reset_variables(csi=song_control.current_song_index)
         try:
             self.activate_button()
         except IndexError:

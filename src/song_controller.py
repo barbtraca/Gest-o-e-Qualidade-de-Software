@@ -17,21 +17,20 @@ class Songs():
         self.current_playing = False
         self.current_song_index = 0
         self.song_lengh = None
-        self.songs = self.find_mp3()
+        self.songs = self.find_songs()
         self.current_song_name = ""
-        print(self.songs)
 
-    def find_mp3(self):
+    def find_songs(self):
         '''
-            Find all the mp3 files from the /songs/ folder
-            and append it into the mp3_files list
+            Find all the song files from the /songs/ folder
+            and append it into the song_files list
         '''
-        mp3_files = []
+        song_files = []
         for root, _, files in os.walk(SONG_PATH):
             for file in files:
                 if file.endswith(".mp3"):
-                    mp3_files.append(root + file)
-        return mp3_files
+                    song_files.append(root + file)
+        return song_files
 
     def play_song(self):
         '''
@@ -41,7 +40,6 @@ class Songs():
             mixer.music.load(self.songs[self.current_song_index])
             mixer.music.set_volume(DEFAULT_VOLUME)
             self.song_lengh = mixer.Sound(file=self.songs[self.current_song_index]).get_length()
-            print("TOCANDO MUSICA")
             mixer.music.play()
         else: mixer.music.unpause()
 
@@ -81,10 +79,7 @@ class Songs():
             A button trigger to start a song or pause it
             including the chage of the button img
         '''
-        try:
-            print(self.songs[self.current_song_index])
-        except IndexError:
-            pass
+
         self.current_playing = not self.current_playing
         self.current_song_name = os.path.basename(self.songs[self.
                                                                  current_song_index]).split(".")[0]
