@@ -151,7 +151,7 @@ class App(customtkinter.CTk):
             when is equal or under 0, the function goes
             to the next music or stop the track
         '''
-        if song_control.song_lengh is None: 
+        if song_control.song_lengh is None:
             time.sleep(1)
             song_control.song_lengh = song_control.song_lengh
         while song_control.song_lengh > 0 and song_control.current_playing:
@@ -162,39 +162,52 @@ class App(customtkinter.CTk):
             try:
                 print("oi")
                 song_control.next_song()
+                print(song_control.current_playing, song_control.current_song_index)
                 song_control.reset_variables(
-                    csi=song_control.current_song_index,
-                    sl =None)
+                    csi=song_control.current_song_index)
                 self.activate_button()
                 song_control.set_mixer_volume(self.slider.get())
             except IndexError:
                 print("oi EXCEPT")
-                song_control.reset_variables(
-                    csi= 0,
-                    cp = True,
-                    sl = None)
-                song_control.button_action(
-                                    button=self.control_button,
-                                    play_image=self.play_img,
-                                    pause_image=self.pause_img
-                                    )
-                print("You track list has completed!")
+                self.completed_track()
+
+    def completed_track(self):
+        song_control.reset_variables(
+            csi= 0,
+            cp = True,
+            sl = None)
+        song_control.button_action(
+                            button=self.control_button,
+                            play_image=self.play_img,
+                            pause_image=self.pause_img
+                            )
+        print("You track list has completed!")
 
     def r_button(self):
         '''
             Goes to the next song of the track
         '''
-        if song_control.next_song():
-            print("a")
-            song_control.song_lengh = None
+        print(song_control.current_playing)
+        if song_control.current_playing:
+            song_control.reset_variables(
+                csi=song_control.current_song_index,
+                cp =song_control.current_playing,
+                sl =1)
             self.activate_button()
         else:
-            self.start_stop_song_countdown()
-            self.control_button.configure(image=self.play_img)
-            song_control.stop_player()
-            print("Reached last song, current playing the first one!")
-            
-        
+            song_control.next_song()
+            try:
+                print("Try do r_button")
+                print(song_control.current_playing, song_control.current_song_index)
+                song_control.reset_variables(
+                csi=song_control.current_song_index,
+                cp =song_control.current_playing,
+                sl =None)
+                self.activate_button()
+            except IndexError:
+                print("Index Error do r_button")
+                self.completed_track()
+  
     def l_button(self):
         '''
             Goes to the previous song of the track

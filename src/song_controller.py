@@ -42,7 +42,6 @@ class Songs():
             self.song_lengh = mixer.Sound(file=self.songs[self.current_song_index]).get_length()
             self.song_lengh = 5
             print("TOCANDO MUSICA")
-            print(self.song_lengh)
             mixer.music.play()
         else: mixer.music.unpause()
 
@@ -57,12 +56,8 @@ class Songs():
             Play the next song of the track
         '''
         self.current_song_index += 1
-        if self.current_song_index > len(self.songs) - 1:
-            self.reset_variables(cp=True)
-            return False
         if self.song_lengh is not None:
             mixer.music.unload()
-        return True
 
     def previous_song(self):
         '''
@@ -89,7 +84,9 @@ class Songs():
             A button trigger to start a song or pause it
             including the chage of the button img
         '''
-        print(self.current_song_index)
+        try:
+            print(self.songs[self.current_song_index])
+        except: pass
         self.current_playing = not self.current_playing
         if self.current_playing:
             button.configure(image=pause_image)
