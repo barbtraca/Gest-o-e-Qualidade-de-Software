@@ -34,13 +34,13 @@ class App(customtkinter.CTk):
                 size=(60, 60)
         )
 
-        self.next_left_img = customtkinter.CTkImage(
+        self.previous_song_button = customtkinter.CTkImage(
             light_image=Image.open("./buttons/next_left.png"),
                 dark_image=Image.open("./buttons/next_left.png"),
             size=(40, 40)
         )
 
-        self.next_right_img = customtkinter.CTkImage(
+        self.next_song_button = customtkinter.CTkImage(
             light_image=Image.open("./buttons/next_right.png"),
                 dark_image=Image.open("./buttons/next_right.png"),
             size=(40, 40)
@@ -77,23 +77,23 @@ class App(customtkinter.CTk):
                                           font=("Arial", 17),
                                           text_color="#000000",
                                           wraplength=155)
-        self.next_left_button = customtkinter.CTkButton(footer_frame,
+        self.previous_song_button = customtkinter.CTkButton(footer_frame,
                                                          hover="transparent",
                                                          fg_color="transparent",
                                                          width=40,
                                                          height=40,
                                                          text=None,
                                                          command=self.l_button,
-                                                         image=self.next_left_img)
+                                                         image=self.previous_song_button)
 
-        self.next_right_button = customtkinter.CTkButton(footer_frame,
+        self.next_song_button = customtkinter.CTkButton(footer_frame,
                                                          hover="transparent",
                                                          fg_color="transparent",
                                                          width=40,
                                                          height=40,
                                                          text=None,
                                                          command=self.r_button,
-                                                         image=self.next_right_img)
+                                                         image=self.next_song_button)
 
         self.control_button = customtkinter.CTkButton(footer_frame,
                                                hover="transparent",
@@ -112,9 +112,9 @@ class App(customtkinter.CTk):
                                       number_of_steps=10)
         footer_frame.grid(row=2, column=0, columnspan=2, pady=(10, 0), sticky="nsew")
         self.song_music.grid(row=0, column=0, padx=35, pady=10)
-        self.next_left_button.grid(row=0, column=1, pady=10)
+        self.previous_song_button.grid(row=0, column=1, pady=10)
         self.control_button.grid(row=0, column=2, pady=10)
-        self.next_right_button.grid(row=0, column=3, pady=10)
+        self.next_song_button.grid(row=0, column=3, pady=10)
         self.slider.grid(row=0, column=4, padx=20, pady=10)
 
     # Functions
