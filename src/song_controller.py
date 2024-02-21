@@ -28,8 +28,8 @@ class Songs():
         song_files = []
         for root, _, files in os.walk(SONG_PATH):
             for file in files:
-                if file.endswith(".mp3"):
-                    song_files.append(root + file)
+                # if file.endswith(".mp3"):
+                song_files.append(root + file)
         return song_files
 
     def play_song(self):

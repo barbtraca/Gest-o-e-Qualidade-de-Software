@@ -58,11 +58,12 @@ class App(customtkinter.CTk):
                                                              progress_color=("cyan"),
                                                              mode="indeterminate"
                                                              )
-        self.song_progressbar.set(0)
 
         self.song_image.grid(row=0, column=0, padx=30, pady=(30, 0), sticky="nsew")
         self.song_progressbar.grid(row=1, column=0, padx=10, pady=20, sticky="ns")
 
+        self.song_progressbar.set(0)
+        self.song_progressbar.start()
         # --------------- Frame Objects --------------- #
 
         footer_frame = customtkinter.CTkFrame(self,
@@ -70,14 +71,15 @@ class App(customtkinter.CTk):
                                       width=720,
                                       height=130,
                                       border_color="#393939",
+                                      fg_color="#363636"
                                      )
 
         self.song_label = customtkinter.CTkLabel(footer_frame,
                                           text="Play to Start",
-                                          font=("Arial", 19),
+                                          font=("Arial", 17),
                                           width=130,
                                           height=50,
-                                          text_color="#000000",
+                                          text_color="#3ADBE5",
                                           wraplength=160)
         self.previous_song_button = customtkinter.CTkButton(footer_frame,
                                                          hover="transparent",
@@ -111,7 +113,11 @@ class App(customtkinter.CTk):
                                       from_=0, to=100,
                                       width=120,
                                       command=self.set_volume,
-                                      number_of_steps=10)
+                                      number_of_steps=50,
+                                      progress_color="#5D4DD1",
+                                      button_color="cyan",
+                                      button_hover_color="dark cyan")
+
         footer_frame.grid(row=2, column=0, columnspan=2, sticky="nsew")
         self.song_label.grid(row=0, column=0, pady=6, padx=(10, 0), sticky="w")
         self.previous_song_button.grid(row=0, column=1, pady=6, padx=(4, 0))
@@ -120,7 +126,7 @@ class App(customtkinter.CTk):
         self.slider.grid(row=0, column=4, pady=6)
 
         self.columnconfigure(0, weight=1)
-        footer_frame.columnconfigure(0, weight=0, minsize=150)
+        footer_frame.columnconfigure(0, weight=0, minsize=155)
 
     # Functions
 
@@ -130,19 +136,14 @@ class App(customtkinter.CTk):
             function
         '''
         if not song_control.playing:
-            self.song_progressbar.set(0)
             self.song_progressbar.configure(indeterminate_speed=1.00 / random.randint(2, 4))
         song_control.button_action(
             button=self.control_button,
             play_image=self.play_img,
             pause_image=self.pause_img)
-        if song_control.current_playing:
-            self.song_progressbar.start()
-        else:
-            self.song_progressbar.stop()
 
         song_control.set_mixer_volume(self.slider.get())
-        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}") 
+        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
 
     def set_volume(self, value):
         '''
@@ -158,8 +159,8 @@ class App(customtkinter.CTk):
         '''
         song_control.reset_variables(
             csi= 0,
-            cp = True,
-            sl = None)
+            cp = True
+        )
         song_control.button_action(
                             button=self.control_button,
                             play_image=self.play_img,
