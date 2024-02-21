@@ -30,7 +30,7 @@ Install dependencies from requirements.txt
 Start the player
 
 ```bash
-  pip main.py
+  python main.py
 ```
 
 
