@@ -34,20 +34,24 @@ class Songs():
 
     def play_song(self):
         '''
-            Play the current song
+            Reproduz a música atual. 
+    Se estiver pausada, retoma a reprodução
         '''
         if not self.playing:
-            mixer.music.load(self.songs[self.current_song_index])
+            current_song = self.songs[self.current_song_index]
+            mixer.music.load(current_song)
             mixer.music.set_volume(DEFAULT_VOLUME)
-            self.playing = True
             mixer.music.play()
-        else: mixer.music.unpause()
+            self.playing = True
+        else: 
+            mixer.music.unpause()
 
     def pause_song(self):
         '''
-            Pause the current song
+           Pausa a música atual.
         '''
-        mixer.music.pause()
+        if self.playing:
+         mixer.music.pause()
 
     def next_song(self):
         '''
