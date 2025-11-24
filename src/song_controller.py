@@ -53,11 +53,11 @@ class Songs():
         if self.playing:
          mixer.music.pause()
 
-    def next_song(self):
-        '''
-            Play the next song of the track
-        '''
-        self.current_song_index += 1
+    def next_song(self): 
+        ''' 
+        Avança para a próxima música da playlist 
+        ''' 
+        self.current_song_index += 1 
         if self.playing:
             mixer.music.unload()
 
