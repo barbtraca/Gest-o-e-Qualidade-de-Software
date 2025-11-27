@@ -10,8 +10,8 @@ song_control = Songs()
 class App(customtkinter.CTk):
     """Main application window."""
 
-    def _init_(self):
-        super()._init_()
+    def __init__(self):
+        super().__init__()
 
         # -------------------- App Setup -------------------- #
 
@@ -23,24 +23,28 @@ class App(customtkinter.CTk):
 
         # -------------------- Load Images -------------------- #
 
+        # Play Button
         self.play_img = customtkinter.CTkImage(
             light_image=Image.open("./buttons/play.png"),
             dark_image=Image.open("./buttons/play.png"),
             size=(60, 60)
         )
 
+        # Pause Button
         self.pause_img = customtkinter.CTkImage(
             light_image=Image.open("./buttons/pause.png"),
             dark_image=Image.open("./buttons/pause.png"),
             size=(60, 60)
         )
 
+        # Previous Button
         self.prev_img = customtkinter.CTkImage(
             light_image=Image.open("./buttons/next_left.png"),
             dark_image=Image.open("./buttons/next_left.png"),
             size=(40, 40)
         )
 
+        # Next Button
         self.next_img = customtkinter.CTkImage(
             light_image=Image.open("./buttons/next_right.png"),
             dark_image=Image.open("./buttons/next_right.png"),
@@ -69,18 +73,18 @@ class App(customtkinter.CTk):
 
         # -------------------- Footer Frame -------------------- #
 
-        footer = customtkinter.CTkFrame(
+        footer_frame = customtkinter.CTkFrame(
             self,
             corner_radius=0,
             width=720,
             height=130,
             fg_color="#363636"
         )
-        footer.grid(row=2, column=0, sticky="nsew")
+        footer_frame.grid(row=2, column=0, sticky="nsew")
 
         # Song label
         self.song_label = customtkinter.CTkLabel(
-            footer,
+            footer_frame,
             text="Play to Start",
             font=("Arial", 17),
             width=130,
@@ -92,26 +96,43 @@ class App(customtkinter.CTk):
 
         # Previous / Play / Next buttons
         self.previous_song_button = customtkinter.CTkButton(
-            footer, fg_color="transparent", text=None, image=self.prev_img,
-            command=self.previous_song
+            footer_frame,
+            fg_color="transparent",
+            width=40,
+            height=40,
+            text=None,
+            image=self.prev_img,
+            command=self.handle_previous_song
         )
         self.previous_song_button.grid(row=0, column=1, padx=4)
 
+        # Control button
         self.control_button = customtkinter.CTkButton(
-            footer, fg_color="transparent", text=None, image=self.play_img,
+            footer_frame,
+            fg_color="transparent",
+            width=25,
+            height=55,
+            text=None,
+            image=self.play_img,
             command=self.toggle_play
         )
         self.control_button.grid(row=0, column=2)
 
+        # Next button
         self.next_song_button = customtkinter.CTkButton(
-            footer, fg_color="transparent", text=None, image=self.next_img,
-            command=self.next_song
+            footer_frame,
+            fg_color="transparent",
+            width=40,
+            height=40,
+            text=None,
+            image=self.next_img,
+            command=self.handle_next_song
         )
         self.next_song_button.grid(row=0, column=3, padx=(0, 20))
 
         # Volume slider
         self.slider = customtkinter.CTkSlider(
-            footer,
+            footer_frame,
             from_=0, to=100,
             width=120,
             command=self.set_volume,
@@ -125,7 +146,7 @@ class App(customtkinter.CTk):
         # ---------------- Layout ---------------- #
 
         self.columnconfigure(0, weight=1)
-        footer.columnconfigure(0, weight=0, minsize=155)
+        footer_frame.columnconfigure(0, weight=0, minsize=155)
 
     # ============================================================
     # Functions
@@ -133,6 +154,11 @@ class App(customtkinter.CTk):
 
     def toggle_play(self):
         """Toggle play/pause and update UI."""
+
+        if not song_control.songs:
+            print("Não é possível tocar: sem músicas.")
+            return
+
         if not song_control.playing:
             speed = 1.0 / random.randint(2, 4)
             self.song_progressbar.configure(indeterminate_speed=speed)
@@ -144,32 +170,47 @@ class App(customtkinter.CTk):
         )
 
         song_control.set_mixer_volume(self.slider.get())
+
         self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
 
     def set_volume(self, value):
         """Set mixer volume only if a song is playing."""
-        if song_control.playing:
-            song_control.set_mixer_volume(value)
+        song_control.set_mixer_volume(value)
 
-    def next_song(self):
+    def handle_next_song(self):
         """Advance to next song."""
-        if song_control.current_playing:
-            self.toggle_play()
 
+        # Navigates to the next song.
         song_control.next_song()
 
-        try:
-            self.toggle_play()
-        except IndexError:
-            self.handle_track_end()
+        # Forces the 'Play' state and starts playback
+        song_control.button_action(
+           button=self.control_button,
+           play_image=self.play_img,
+           pause_image=self.pause_img,
+           is_navigation=True
+        )
 
-    def previous_song(self):
+        # Updates the label
+        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
+
+
+    def handle_previous_song(self):
         """Go to previous song."""
-        if song_control.current_playing:
-            self.toggle_play()
 
+        # Navigates to the previous song
         song_control.previous_song()
-        self.toggle_play()
+
+        # Forces the 'Play' state and starts playback
+        song_control.button_action(
+            button=self.control_button,
+            play_image=self.play_img,
+            pause_image=self.pause_img,
+            is_navigation=True
+        )
+
+        # Updates the label
+        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
 
     def handle_track_end(self):
         """Handle end of playlist."""
