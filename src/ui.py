@@ -1,7 +1,9 @@
 """UI Screen and main functions."""
 import random
+
 import customtkinter
 from PIL import Image
+
 from src.song_controller import Songs
 
 song_control = Songs()
@@ -23,28 +25,28 @@ class App(customtkinter.CTk):
 
         # -------------------- Load Images -------------------- #
 
-        # Play Button
+        """ Play Button"""
         self.play_img = customtkinter.CTkImage(
             light_image=Image.open("./buttons/play.png"),
             dark_image=Image.open("./buttons/play.png"),
             size=(60, 60)
         )
 
-        # Pause Button
+        """Pause Button"""
         self.pause_img = customtkinter.CTkImage(
             light_image=Image.open("./buttons/pause.png"),
             dark_image=Image.open("./buttons/pause.png"),
             size=(60, 60)
         )
 
-        # Previous Button
+        """ Previous Button"""
         self.prev_img = customtkinter.CTkImage(
             light_image=Image.open("./buttons/next_left.png"),
             dark_image=Image.open("./buttons/next_left.png"),
             size=(40, 40)
         )
 
-        # Next Button
+        """ Next Button"""
         self.next_img = customtkinter.CTkImage(
             light_image=Image.open("./buttons/next_right.png"),
             dark_image=Image.open("./buttons/next_right.png"),
@@ -82,7 +84,7 @@ class App(customtkinter.CTk):
         )
         footer_frame.grid(row=2, column=0, sticky="nsew")
 
-        # Song label
+        """ Song label"""
         self.song_label = customtkinter.CTkLabel(
             footer_frame,
             text="Play to Start",
@@ -94,7 +96,7 @@ class App(customtkinter.CTk):
         )
         self.song_label.grid(row=0, column=0, pady=6, padx=(10, 0), sticky="w")
 
-        # Previous / Play / Next buttons
+        """Previous / Play / Next buttons"""
         self.previous_song_button = customtkinter.CTkButton(
             footer_frame,
             fg_color="transparent",
@@ -106,7 +108,7 @@ class App(customtkinter.CTk):
         )
         self.previous_song_button.grid(row=0, column=1, padx=4)
 
-        # Control button
+        """Control button"""
         self.control_button = customtkinter.CTkButton(
             footer_frame,
             fg_color="transparent",
@@ -118,7 +120,7 @@ class App(customtkinter.CTk):
         )
         self.control_button.grid(row=0, column=2)
 
-        # Next button
+        """Next button"""
         self.next_song_button = customtkinter.CTkButton(
             footer_frame,
             fg_color="transparent",
@@ -130,7 +132,7 @@ class App(customtkinter.CTk):
         )
         self.next_song_button.grid(row=0, column=3, padx=(0, 20))
 
-        # Volume slider
+        """ Volume slider"""
         self.slider = customtkinter.CTkSlider(
             footer_frame,
             from_=0, to=100,
@@ -179,29 +181,9 @@ class App(customtkinter.CTk):
 
     def handle_next_song(self):
         """Advance to next song."""
-
-        # Navigates to the next song.
         song_control.next_song()
 
-        # Forces the 'Play' state and starts playback
-        song_control.button_action(
-           button=self.control_button,
-           play_image=self.play_img,
-           pause_image=self.pause_img,
-           is_navigation=True
-        )
-
-        # Updates the label
-        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
-
-
-    def handle_previous_song(self):
-        """Go to previous song."""
-
-        # Navigates to the previous song
-        song_control.previous_song()
-
-        # Forces the 'Play' state and starts playback
+        """ Forces the 'Play' state and starts playback"""
         song_control.button_action(
             button=self.control_button,
             play_image=self.play_img,
@@ -209,7 +191,20 @@ class App(customtkinter.CTk):
             is_navigation=True
         )
 
-        # Updates the label
+        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
+
+    def handle_previous_song(self):
+        """Go to previous song."""
+        song_control.previous_song()
+
+        """ Forces the 'Play' state and starts playback"""
+        song_control.button_action(
+            button=self.control_button,
+            play_image=self.play_img,
+            pause_image=self.pause_img,
+            is_navigation=True
+        )
+
         self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
 
     def handle_track_end(self):

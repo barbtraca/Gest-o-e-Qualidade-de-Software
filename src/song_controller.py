@@ -4,7 +4,6 @@ import os
 from customtkinter import CTkImage, CTkButton
 from pygame import mixer
 
-# Initializes the pygame mixer to play music
 mixer.init()
 
 # ----------------------- Constants ----------------------- #
@@ -44,7 +43,6 @@ class Songs:
         """Play or resume current song."""
         if not self.songs:
             return
-        # Ensures the new song is loaded and played
         if not mixer.music.get_busy():
             current_song = self.songs[self.current_song_index]
             mixer.music.load(current_song)
@@ -99,13 +97,11 @@ class Songs:
             print("Não é possível executar 'button_action': sem músicas encontradas.")
             return
 
-        # CRITICAL LOGIC: If it's navigation, force the 'Play' state (current_playing = True)
-
         if is_navigation:
             self.current_playing = True
         else:
 
-            # If it's a normal click on the Play/Pause button, invert the state
+            """ If it's a normal click on the Play/Pause button, invert the state"""
 
             self.current_playing = not self.current_playing
 
