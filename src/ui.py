@@ -1,98 +1,189 @@
-"""Song Controller."""
-import os
-from pygame import mixer
-from customtkinter import CTkImage, CTkButton
+"""UI Screen and main functions."""
+import random
+import customtkinter
+from PIL import Image
+from src.song_controller import Songs
 
-mixer.init()
-
-SONG_PATH = "./songs/"
-DEFAULT_VOLUME = 0.5
-MAX_VOLUME = 1.0
+song_control = Songs()
 
 
-class Songs:
-    """Manage songs, playback and state."""
+class App(customtkinter.CTk):
+    """Main application window."""
 
-    def _init_(self) -> None:
-        self.current_playing = False
-        self.current_song_index = 0
-        self.playing = False
-        self.songs = self._find_songs()
-        self.current_song_name = ""
+    def _init_(self):
+        super()._init_()
 
-    # ----------------------- Song Loading ----------------------- #
+        # -------------------- App Setup -------------------- #
 
-    def _find_songs(self):
-        """Return list of song file paths inside /songs/."""
-        song_files = []
-        for root, _, files in os.walk(SONG_PATH):
-            for file in files:
-                song_files.append(os.path.join(root, file))
-        return song_files
+        self.title("Music Player")
+        self.geometry("510x415")
+        self._set_appearance_mode("dark")
+        self.minsize(width=510, height=415)
+        self.maxsize(width=510, height=415)
 
-    # ----------------------- Playback ----------------------- #
+        # -------------------- Load Images -------------------- #
 
-    def play_song(self):
-        """Play or resume current song."""
-        if not self.playing:
-            current_song = self.songs[self.current_song_index]
-            mixer.music.load(current_song)
-            mixer.music.set_volume(DEFAULT_VOLUME)
-            mixer.music.play()
-            self.playing = True
-        else:
-            mixer.music.unpause()
+        self.play_img = customtkinter.CTkImage(
+            light_image=Image.open("./buttons/play.png"),
+            dark_image=Image.open("./buttons/play.png"),
+            size=(60, 60)
+        )
 
-    def pause_song(self):
-        """Pause current song."""
-        if self.playing:
-            mixer.music.pause()
+        self.pause_img = customtkinter.CTkImage(
+            light_image=Image.open("./buttons/pause.png"),
+            dark_image=Image.open("./buttons/pause.png"),
+            size=(60, 60)
+        )
+
+        self.prev_img = customtkinter.CTkImage(
+            light_image=Image.open("./buttons/next_left.png"),
+            dark_image=Image.open("./buttons/next_left.png"),
+            size=(40, 40)
+        )
+
+        self.next_img = customtkinter.CTkImage(
+            light_image=Image.open("./buttons/next_right.png"),
+            dark_image=Image.open("./buttons/next_right.png"),
+            size=(40, 40)
+        )
+
+        # -------------------- Main Image -------------------- #
+
+        image = customtkinter.CTkImage(
+            dark_image=Image.open("./main_img.jpg"),
+            size=(250, 250)
+        )
+
+        self.song_image = customtkinter.CTkLabel(self, text=None, image=image)
+        self.song_image.grid(row=0, column=0, padx=30, pady=(30, 0), sticky="nsew")
+
+        self.song_progressbar = customtkinter.CTkProgressBar(
+            self,
+            orientation="horizontal",
+            progress_color="cyan",
+            mode="indeterminate"
+        )
+        self.song_progressbar.grid(row=1, column=0, padx=10, pady=20, sticky="ns")
+        self.song_progressbar.set(0)
+        self.song_progressbar.start()
+
+        # -------------------- Footer Frame -------------------- #
+
+        footer = customtkinter.CTkFrame(
+            self,
+            corner_radius=0,
+            width=720,
+            height=130,
+            fg_color="#363636"
+        )
+        footer.grid(row=2, column=0, sticky="nsew")
+
+        # Song label
+        self.song_label = customtkinter.CTkLabel(
+            footer,
+            text="Play to Start",
+            font=("Arial", 17),
+            width=130,
+            height=50,
+            text_color="#3ADBE5",
+            wraplength=160,
+        )
+        self.song_label.grid(row=0, column=0, pady=6, padx=(10, 0), sticky="w")
+
+        # Previous / Play / Next buttons
+        self.previous_song_button = customtkinter.CTkButton(
+            footer, fg_color="transparent", text=None, image=self.prev_img,
+            command=self.previous_song
+        )
+        self.previous_song_button.grid(row=0, column=1, padx=4)
+
+        self.control_button = customtkinter.CTkButton(
+            footer, fg_color="transparent", text=None, image=self.play_img,
+            command=self.toggle_play
+        )
+        self.control_button.grid(row=0, column=2)
+
+        self.next_song_button = customtkinter.CTkButton(
+            footer, fg_color="transparent", text=None, image=self.next_img,
+            command=self.next_song
+        )
+        self.next_song_button.grid(row=0, column=3, padx=(0, 20))
+
+        # Volume slider
+        self.slider = customtkinter.CTkSlider(
+            footer,
+            from_=0, to=100,
+            width=120,
+            command=self.set_volume,
+            number_of_steps=50,
+            progress_color="#5D4DD1",
+            button_color="cyan",
+            button_hover_color="dark cyan"
+        )
+        self.slider.grid(row=0, column=4, pady=6)
+
+        # ---------------- Layout ---------------- #
+
+        self.columnconfigure(0, weight=1)
+        footer.columnconfigure(0, weight=0, minsize=155)
+
+    # ============================================================
+    # Functions
+    # ============================================================
+
+    def toggle_play(self):
+        """Toggle play/pause and update UI."""
+        if not song_control.playing:
+            speed = 1.0 / random.randint(2, 4)
+            self.song_progressbar.configure(indeterminate_speed=speed)
+
+        song_control.button_action(
+            button=self.control_button,
+            play_image=self.play_img,
+            pause_image=self.pause_img
+        )
+
+        song_control.set_mixer_volume(self.slider.get())
+        self.song_label.configure(text=f"Playing:\n{song_control.current_song_name}")
+
+    def set_volume(self, value):
+        """Set mixer volume only if a song is playing."""
+        if song_control.playing:
+            song_control.set_mixer_volume(value)
 
     def next_song(self):
         """Advance to next song."""
-        self.current_song_index += 1
-        if self.playing:
-            mixer.music.unload()
+        if song_control.current_playing:
+            self.toggle_play()
+
+        song_control.next_song()
+
+        try:
+            self.toggle_play()
+        except IndexError:
+            self.handle_track_end()
 
     def previous_song(self):
         """Go to previous song."""
-        self.playing = False
-        self.current_song_index -= 1
+        if song_control.current_playing:
+            self.toggle_play()
 
-        if self.current_song_index < 0:
-            print("Reached first song")
-            self.current_song_index = 0
+        song_control.previous_song()
+        self.toggle_play()
 
-    # ----------------------- UI Trigger ----------------------- #
-
-    def button_action(self, button: CTkButton, play_image: CTkImage, pause_image: CTkImage):
-        """Handle play/pause button click."""
-        self.current_playing = not self.current_playing
-        self.current_song_name = os.path.basename(self.songs[self.current_song_index]).split(".")[0]
-
-        if self.current_playing:
-            button.configure(image=pause_image)
-            self.play_song()
-        else:
-            self.pause_song()
-            button.configure(image=play_image)
-
-    # ----------------------- Utility ----------------------- #
-
-    def set_mixer_volume(self, value):
-        """Set volume (slider value is 0–100)."""
-        try:
-            mixer.music.set_volume((value / 100) * MAX_VOLUME)
-        except Exception:
-            pass
+    def handle_track_end(self):
+        """Handle end of playlist."""
+        song_control.reset_variables(csi=0, cp=True)
+        song_control.button_action(
+            button=self.control_button,
+            play_image=self.play_img,
+            pause_image=self.pause_img,
+        )
+        self.song_label.configure(text="Tracklist completed!")
 
     def stop_player(self):
-        """Stop music and reset state."""
-        self.current_playing = False
-        mixer.music.stop()
-
-    def reset_variables(self, csi=0, cp=False, p=False):
-        """Reset playback variables."""
-        self.current_song_index = csi
-        self.current_playing = cp
-        self.playing = p
+        """Stop playback when closing window."""
+        if song_control.current_playing:
+            song_control.stop_player()
+        print("Window closed")
+        self.destroy()
