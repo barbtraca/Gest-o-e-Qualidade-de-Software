@@ -45,8 +45,3 @@ Start the player
 ## Screenshots
 
 ![App Screenshot](https://github.com/arthurspedine/Music-Player/assets/65985748/eb1031f8-08d8-4785-b251-2215acd7f60e)
-
-
-## Feedback
-
-If you have any feedback, please feel free to contact me at spedinearthur@gmail.com
