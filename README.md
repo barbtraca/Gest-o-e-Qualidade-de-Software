@@ -22,11 +22,6 @@ Use your repository link to clone the project:
 git clone https://github.com/barbtraca/Gest-o-e-Qualidade-de-Software.git
 ```
 
-Python version :
-```bash
-Recommended: 3.12.0
-```
-
 Go to the project directory
 
 Install dependencies from requirements.txt
