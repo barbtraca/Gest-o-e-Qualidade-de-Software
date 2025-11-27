@@ -1,23 +1,30 @@
-# Music Player
+# 🎶 Music Player (Python & CustomTkinter)
 
-This music player was created for a personal objective to practice programming skills and learn to debug own code.
+This is a simple music player project built using Python. It combines the **CustomTkinter** library for a modern graphical user interface and **Pygame Mixer** for robust audio control.
 
-These songs: 
-- Motivational, by Infraction
-- My Eyes, by Travis Scott
-- Feelings are Fatal, by Mxmtoon
-  
-The songs listed above are fully copyrighted by their respective owners. I have selected them solely for educational purposes.
+## 💻 System Requirements
 
-Feel free to add more songs to the folder. Just pay attention to the file extension; try to use .mp3 or .wav files.
+To run this project, you need Python installed along with the libraries listed below.
 
+* **Python Version:** **3.12.0** (Recommended)
 
-## Run Locally
+---
 
-Clone the project
+## 📦 Installation and Dependencies
+
+Follow the steps below to set up your environment and install the necessary libraries.
+
+### 1. Clone the Repository
+
+Use your repository link to clone the project:
 
 ```bash
-  git clone https://github.com/arthurspedine/Music-Player.git
+git clone https://github.com/barbtraca/Gest-o-e-Qualidade-de-Software.git
+```
+
+Python version :
+```bash
+Recommended: 3.12.0
 ```
 
 Go to the project directory
