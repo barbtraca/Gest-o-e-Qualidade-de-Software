@@ -1,32 +1,27 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-# Import the App class and the global song_control instance
 from src.ui import App, song_control
-import customtkinter
 
 
-# --- Mocks ---
 class MockedButton:
-    """Mock of the CTkButton class using MagicMock to track calls."""
 
     def __init__(self):
         self.configure = MagicMock()
 
 
 class MockedImage:
-    """Mock of the CTkImage class."""
     pass
 
 
-MockedWidget = MagicMock()  # Used for CTkLabel, CTkProgressBar, CTkFrame
-
+MockedWidget = MagicMock()
 
 # --------------------------------------------------------------------------------------
 # All Test Execution
 # --------------------------------------------------------------------------------------
 if __name__ == '__main__':
     unittest.main()
+
 
 # --------------------------------------------------------------------------------------
 # UNIT TESTS FOR THE UI CLASS (App)
@@ -43,7 +38,6 @@ class TestAppFunctions(unittest.TestCase):
     # Use *args to capture the 3 mocks injected by class decorators.
     # This prevents the TypeError.
     def setUp(self, *args):
-
         # Patching all critical CTk widget constructors that fail the Tcl initialization
         patcher_label = patch('src.ui.customtkinter.CTkLabel', new=MockedWidget)
         patcher_button = patch('src.ui.customtkinter.CTkButton', new=MockedWidget)
