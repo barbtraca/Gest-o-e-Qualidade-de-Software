@@ -23,10 +23,16 @@ MockedWidget = MagicMock()  # Used for CTkLabel, CTkProgressBar, CTkFrame
 
 
 # --------------------------------------------------------------------------------------
+# All Test Execution
+# --------------------------------------------------------------------------------------
+if __name__ == '__main__':
+    unittest.main()
+
+# --------------------------------------------------------------------------------------
 # UNIT TESTS FOR THE UI CLASS (App)
 # --------------------------------------------------------------------------------------
 
-# DECORADORES DE CLASSE: Os mocks serão injetados no setUp.
+# CLASS DECORATORS: Mocks will be injected into setUp.
 @patch('src.ui.App.__init__', return_value=None)
 @patch('src.ui.customtkinter.CTkImage', new=MockedImage)
 @patch('src.ui.Image.open')
@@ -34,9 +40,9 @@ class TestAppFunctions(unittest.TestCase):
 
     # ----------------------- Initial Setup -----------------------
 
-    # Usar *args para capturar os 3 mocks injetados pelos decoradores de classe.
-    # Isso evita o TypeError.
-    def setUp(self, *args):  # <--- CORREÇÃO CRÍTICA AQUI
+    # Use *args to capture the 3 mocks injected by class decorators.
+    # This prevents the TypeError.
+    def setUp(self, *args):
 
         # Patching all critical CTk widget constructors that fail the Tcl initialization
         patcher_label = patch('src.ui.customtkinter.CTkLabel', new=MockedWidget)
@@ -171,10 +177,3 @@ class TestAppFunctions(unittest.TestCase):
             self.app.stop_player()
             self.mock_song_control.stop_player.assert_not_called()
             mock_destroy.assert_called_once()
-
-
-# --------------------------------------------------------------------------------------
-# All Test Execution
-# --------------------------------------------------------------------------------------
-if __name__ == '__main__':
-    unittest.main()
